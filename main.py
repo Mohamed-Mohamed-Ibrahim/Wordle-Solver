@@ -72,8 +72,8 @@ def pattern_code(guess, target):
 
 
 def precompute_pattern_matrix():
-    if pattern_matrix_file.exists():
-        return pd.read_csv(pattern_matrix_file, index_col=0)
+    # if pattern_matrix_file.exists():
+    #     return pd.read_csv(pattern_matrix_file, index_col=0)
 
     with open(guess_file_path, "r") as file:
         guesses = json.load(file)
@@ -82,8 +82,8 @@ def precompute_pattern_matrix():
         targets = json.load(file)
 
     data = {}
-    guesses = guesses[:10]
-    targets = targets[:10]
+    # guesses = guesses[:10]
+    # targets = targets[:10]
     for guess in guesses:
         data[guess] = []
         for target in targets:
@@ -164,7 +164,7 @@ def get_entropy(pattern_matrix, guess, feedback, targets):
 def main():
     print("=" * 100, "\n")
 
-    i = 0
+    i = 4
     h_w = math.log2(3242)
     pattern_matrix = precompute_pattern_matrix()
     guesses = pattern_matrix.columns.to_list()
@@ -177,10 +177,11 @@ def main():
         print_iter(h_w, best_information_gain, best_guess)
 
         print("Guess Word: ", end="")
-        user_guess = get_user_guess(set(guesses))
+        # user_guess = get_user_guess(set(guesses))
+        user_guess = "weary"
 
         print("Feedback (g for green, y for yellow, r for grey): ", end="")
-        user_feedback = get_user_feedback()
+        user_feedback = "rgyrr"
 
         h_w -= get_entropy(pattern_matrix, user_guess, user_feedback, targets)
 
