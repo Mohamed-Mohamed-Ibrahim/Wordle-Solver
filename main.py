@@ -119,7 +119,7 @@ def get_best_guess(pattern_matrix, user_guess="", user_feedback=""):
         targets = list(targets)
     else:
         targets = ref_targets
-    # print(targets)
+    print(f"Targets length: {len(targets)}")
     for guess in pattern_matrix.columns:
         patterns = []
         for target in targets:
@@ -178,7 +178,7 @@ def main():
 
         print("Guess Word: ", end="")
         # user_guess = get_user_guess(set(guesses))
-        user_guess = "weary"
+        user_guess = best_guess
 
         print("Feedback (g for green, y for yellow, r for grey): ", end="")
         user_feedback = "rgyrr"
