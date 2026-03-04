@@ -6,8 +6,9 @@ from collections import Counter
 N_ITERS = 6
 
 h_w = math.log2(12970)
-data_dir = Path("data")
+pattern_matrix = None
 
+data_dir = Path("data")
 pattern_matrix_file = data_dir / "pattern_matrix.csv"
 guess_file_path = data_dir / "dictionary_5_letter.json"
 target_file_path = data_dir / "targets_5_letter.json"
@@ -33,9 +34,9 @@ def pattern_code(guess, target):
 
 
 def precompute_pattern_matrix():
-    # if pattern_matrix_file.exists():
-    # pattern_matrix = 12
-    # return
+    if pattern_matrix_file.exists():
+        pattern_matrix = pd.read_csv(pattern_matrix_file)
+        return pattern_matrix
 
     with open(guess_file_path, "r") as file:
         guesses = json.load(file)
@@ -56,11 +57,9 @@ def precompute_pattern_matrix():
 
     df.to_csv(pattern_matrix_file)
 
-    print(
-        f"CSV file '{pattern_matrix_file}' created successfully with string indices and columns."
-    )
-    print("\nDataFrame structure:")
     print(df)
+
+    return df
 
 
 def get_best_guess():
@@ -87,5 +86,5 @@ def main():
 
 if __name__ == "__main__":
     # main()
-    # precompute_pattern_matrix()
-    print(pattern_code("ALLEY", "APPLE"))
+    pattern_matrix = precompute_pattern_matrix()
+    # print(pattern_code("ALLEY", "APPLE"))
