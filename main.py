@@ -72,8 +72,8 @@ def pattern_code(guess, target):
 
 
 def precompute_pattern_matrix():
-    # if pattern_matrix_file.exists():
-    #     return pd.read_csv(pattern_matrix_file, index_col=0)
+    if pattern_matrix_file.exists():
+        return pd.read_csv(pattern_matrix_file, index_col=0)
 
     with open(guess_file_path, "r") as file:
         guesses = json.load(file)
