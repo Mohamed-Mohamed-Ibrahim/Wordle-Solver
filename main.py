@@ -3,19 +3,53 @@ import math, json
 import pandas as pd
 from collections import Counter
 import numpy as np
+import re
 
 from feedback import pattern_str_to_code
 
 N_ITERS = 6
 
-h_w = math.log2(12970)
-h_w = math.log2(3242)
 pattern_matrix = None
 
 data_dir = Path("data")
 pattern_matrix_file = data_dir / "pattern_matrix.csv"
 guess_file_path = data_dir / "dictionary_5_letter.json"
 target_file_path = data_dir / "targets_5_letter.json"
+
+
+def get_user_guess(guesses):
+    valid_guess_regex = r"^[a-z]{5}$"
+
+    user_guess = input().strip()
+
+    # while user_guess not in guesses or not re.match(valid_guess_regex, user_guess):
+    #     print(
+    #         "Please. Ensure that the input is following the right requirements\n"
+    #         + "1. length of 5\n"
+    #         + "2. the word is in the dictionary\n"
+    #         + "3. only lower case english characters is supported\n"
+    #     )
+    #     print("Guess Word: ", end="")
+    #     user_guess = input().strip()
+
+    return user_guess
+
+
+def get_user_feedback():
+    valid_feedback_regex = r"^(r|g|y){5}$"
+
+    user_feedback = input().strip()
+
+    # while not re.match(valid_feedback_regex, user_feedback):
+    #     print(
+    #         "Please. Ensure that the input is following the right requirements\n"
+    #         + "1. length of 5\n"
+    #         + "2. g or y or r are the only supported characters\n"
+    #     )
+    #     print("Feedback (g for green, y for yellow, r for grey): ", end="")
+    #     user_feedback = input().strip()
+
+    return user_feedback
 
 
 def pattern_code(guess, target):
@@ -48,8 +82,8 @@ def precompute_pattern_matrix():
         targets = json.load(file)
 
     data = {}
-    guesses = guesses[:5]
-    targets = targets[:5]
+    guesses = guesses[:10]
+    targets = targets[:10]
     for guess in guesses:
         data[guess] = []
         for target in targets:
@@ -59,7 +93,7 @@ def precompute_pattern_matrix():
     df.index.name = "targets"
 
     df.to_csv(pattern_matrix_file)
-    print(df)
+    # print(df)
 
     return df
 
@@ -85,7 +119,7 @@ def get_best_guess(pattern_matrix, user_guess="", user_feedback=""):
         targets = list(targets)
     else:
         targets = ref_targets
-    print(targets)
+    # print(targets)
     for guess in pattern_matrix.columns:
         patterns = []
         for target in targets:
@@ -102,7 +136,7 @@ def get_best_guess(pattern_matrix, user_guess="", user_feedback=""):
         if information_gain > best_information_gain:
             best_guess = guess
             best_information_gain = information_gain
-    return best_guess, best_information_gain
+    return best_guess, best_information_gain, targets
 
 
 def print_iter(h_w, h_y, best_word):
@@ -115,27 +149,49 @@ def print_iter(h_w, h_y, best_word):
     print("=" * 100, "\n")
 
 
+def get_entropy(pattern_matrix, guess, feedback, targets):
+    patterns = []
+    for target in targets:
+        patterns.append(pattern_matrix.at[target, guess])
+    codes = [pattern_str_to_code(pattern) for pattern in patterns]
+    cnts = Counter(codes)
+    print(cnts[feedback])
+    prob = cnts[feedback] / len(codes)
+    entropy = -1 * prob * math.log2(prob) if prob > 0 else 0
+    return entropy
+
+
 def main():
     print("=" * 100, "\n")
+
     i = 0
+    h_w = math.log2(3242)
     pattern_matrix = precompute_pattern_matrix()
-    # guesses = pattern_matrix.columns.to_list()
+    guesses = pattern_matrix.columns.to_list()
     user_guess, user_feedback = "", ""
 
     while i < N_ITERS:
-        best_guess, best_information_gain = get_best_guess(
+        best_guess, best_information_gain, targets = get_best_guess(
             pattern_matrix, user_guess, user_feedback
         )
         print_iter(h_w, best_information_gain, best_guess)
+
         print("Guess Word: ", end="")
-        user_guess = input()
-        print("Feedback: ", end="")
-        user_feedback = input()
+        user_guess = get_user_guess(set(guesses))
+
+        print("Feedback (g for green, y for yellow, r for grey): ", end="")
+        user_feedback = get_user_feedback()
+
+        h_w -= get_entropy(pattern_matrix, user_guess, user_feedback, targets)
+
+        print()
 
         if user_feedback == "ggggg":
-            break
+            print("Well Done")
+            return
 
         i += 1
+    print("Game Over ... Better Luck next time ...")
 
 
 if __name__ == "__main__":
