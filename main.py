@@ -212,11 +212,12 @@ def main():
     h_w = math.log2(3242)
     pattern_matrix = precompute_pattern_matrix()
     guesses = pattern_matrix.columns.to_list()
+    targets = pattern_matrix.index.to_list()
     user_guess, user_feedback = "", ""
 
     while i < N_ITERS:
         best_guess, best_information_gain, targets = get_best_guess(
-            pattern_matrix, user_guess, user_feedback
+            pattern_matrix, user_guess, user_feedback, targets
         )
         print_iter(h_w, best_information_gain, best_guess)
 
