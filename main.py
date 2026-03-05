@@ -164,7 +164,7 @@ def get_entropy(pattern_matrix, guess, feedback, targets):
 def main():
     print("=" * 100, "\n")
 
-    i = 4
+    i = 0
     h_w = math.log2(3242)
     pattern_matrix = precompute_pattern_matrix()
     guesses = pattern_matrix.columns.to_list()
