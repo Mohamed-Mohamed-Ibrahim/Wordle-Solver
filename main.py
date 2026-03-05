@@ -197,7 +197,7 @@ def get_best_guess(pattern_matrix, user_guess="", user_feedback="", targets=[]):
             best_information_gain = information_gain
             best_guesses.clear()
             best_guesses.add(guess)
-        elif abs(information_gain - best_information_gain) < 1e5:
+        elif abs(information_gain - best_information_gain) < 1e-9:
             best_guesses.add(guess)
 
     for guess in list(best_guesses):
