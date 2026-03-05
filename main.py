@@ -17,6 +17,7 @@ target_file_path = data_dir / "targets_5_letter.json"
 pattern_codes_file_path = data_dir / "codes.json"
 
 
+# region conversion
 def pattern_str_to_code(s: str) -> int:
     res = 0
 
@@ -31,6 +32,7 @@ def pattern_str_to_code(s: str) -> int:
 
 
 def pattern_code_to_str(code: int) -> str:
+    global mapping
     code = str(code)
     if mapping != None:
         return mapping[f"{code}"]
@@ -58,6 +60,10 @@ def pattern_code_to_str(code: int) -> str:
     return mapping[f"{code}"]
 
 
+# endregion
+
+
+# region input validation
 def get_user_guess(guesses):
     valid_guess_regex = r"^[a-z]{5}$"
 
@@ -91,6 +97,9 @@ def get_user_feedback():
         user_feedback = input().strip()
 
     return user_feedback
+
+
+# endregion
 
 
 def pattern_code(guess, target):
