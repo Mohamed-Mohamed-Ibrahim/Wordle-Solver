@@ -5,16 +5,57 @@ from collections import Counter
 import numpy as np
 import re
 
-from feedback import *
-
 N_ITERS = 6
 
 pattern_matrix = None
+mapping = None
 
 data_dir = Path("data")
 pattern_matrix_file = data_dir / "pattern_matrix.csv"
 guess_file_path = data_dir / "dictionary_5_letter.json"
 target_file_path = data_dir / "targets_5_letter.json"
+pattern_codes_file_path = data_dir / "codes.json"
+
+
+def pattern_str_to_code(s: str) -> int:
+    res = 0
+
+    for i, c in enumerate(s):
+        p = pow(3, i)
+        if c == "g":
+            res += p * 2
+        elif c == "y":
+            res += p
+
+    return res
+
+
+def pattern_code_to_str(code: int) -> str:
+    code = str(code)
+    if mapping != None:
+        return mapping[f"{code}"]
+    elif pattern_codes_file_path.exists():
+        with open(pattern_codes_file_path, "r") as file:
+            mapping = json.load(file)
+    else:
+        mapping = {}
+        i = 0
+
+        strs = deque()
+        strs.append("")
+        for i in range(5):
+            for _ in range(len(strs)):
+                s = strs.popleft()
+                strs.append(s + "r")
+                strs.append(s + "y")
+                strs.append(s + "g")
+
+        for s in strs:
+            c = pattern_str_to_code(s)
+            mapping[c] = s
+        with open(pattern_codes_file_path, "w") as file:
+            json.dump(mapping, file)
+    return mapping[f"{code}"]
 
 
 def get_user_guess(guesses):
@@ -103,8 +144,7 @@ def get_best_guess(pattern_matrix, user_guess="", user_feedback=""):
     best_information_gain = 0
     ref_targets = pattern_matrix.index.to_list()
     targets = set()
-    # if user_guess != "":
-    if False:
+    if user_guess != "":
         for target in ref_targets:
             valid_target = True
             for i, (c, f) in enumerate(zip(user_guess, user_feedback)):
@@ -193,6 +233,10 @@ def main():
         if user_feedback == "ggggg":
             print("Well Done")
             return
+
+        if len(targets) == 0:
+            print("No such a target in targets.json")
+            break
 
         i += 1
     print("Game Over ... Better Luck next time ...")
