@@ -103,7 +103,8 @@ def get_best_guess(pattern_matrix, user_guess="", user_feedback=""):
     best_information_gain = 0
     ref_targets = pattern_matrix.index.to_list()
     targets = set()
-    if user_guess != "":
+    # if user_guess != "":
+    if False:
         for target in ref_targets:
             valid_target = True
             for i, (c, f) in enumerate(zip(user_guess, user_feedback)):
@@ -119,8 +120,8 @@ def get_best_guess(pattern_matrix, user_guess="", user_feedback=""):
         targets = list(targets)
     else:
         targets = ref_targets
-    # print(f"Targets length: {len(targets)}")
-    print(f"Targets length: {targets}")
+    print(f"Targets length: {len(targets)}")
+    # print(f"Targets length: {targets}")
     for guess in pattern_matrix.columns:
         patterns = []
         for target in targets:
