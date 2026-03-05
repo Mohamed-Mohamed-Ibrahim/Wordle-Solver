@@ -137,22 +137,21 @@ def precompute_pattern_matrix():
 
 # endregion
 
+
 # region VIP fns
 def pattern_code(guess, target):
     res = ["r"] * 5
-    ct = Counter(target)
+    cnt = Counter(target)
 
-    # First pass: Find all Greens and "consume" them from the count
     for i, (g, t) in enumerate(zip(guess, target)):
         if g == t:
             res[i] = "g"
-            ct[g] -= 1
+            cnt[g] -= 1
 
-    # Second pass: Find Yellows among remaining letters
-    for i, g in enumerate(guess):
-        if res[i] != "g" and ct[g] > 0:
+    for i, (g, t) in enumerate(zip(guess, target)):
+        if res[i] != "g" and cnt[g] > 0:
             res[i] = "y"
-            ct[g] -= 1
+            cnt[g] -= 1
 
     return "".join(res)
 
@@ -200,7 +199,10 @@ def get_best_guess(pattern_matrix, user_guess="", user_feedback="", targets=[]):
             best_information_gain = information_gain
 
     return best_guess, best_information_gain, targets
+
+
 # endregion
+
 
 # region utils fns
 def print_iter(h_w, h_y, best_word):
