@@ -181,9 +181,11 @@ def main():
         user_guess = best_guess
 
         print("Feedback (g for green, y for yellow, r for grey): ", end="")
-        user_feedback = "rgyrr"
+        user_feedback = get_user_feedback()
 
-        h_w -= get_entropy(pattern_matrix, user_guess, user_feedback, targets)
+        gained_entropy = get_entropy(pattern_matrix, user_guess, user_feedback, targets)
+        print(f"Entropy gained from guess: {gained_entropy}")
+        h_w -= gained_entropy
 
         print()
 
