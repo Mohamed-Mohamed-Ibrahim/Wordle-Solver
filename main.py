@@ -157,7 +157,7 @@ def get_entropy(pattern_matrix, guess, feedback, targets):
     cnts = Counter(codes)
     print(cnts[feedback])
     prob = cnts[feedback] / len(codes)
-    entropy = -1 * prob * math.log2(prob) if prob > 0 else 0
+    entropy = -1 * prob * math.log2(prob) if prob < 0 else 0
     return entropy
 
 
