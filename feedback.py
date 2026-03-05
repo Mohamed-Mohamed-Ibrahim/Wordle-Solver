@@ -1,3 +1,11 @@
+from collections import deque
+from pathlib import Path
+import json
+
+data_dir = Path("data")
+pattern_codes_file_path = data_dir / "codes.json"
+
+
 def pattern_str_to_code(s: str) -> int:
     res = 0
 
@@ -11,16 +19,36 @@ def pattern_str_to_code(s: str) -> int:
     return res
 
 
-# def pattern_code_to_str(code: int) -> str:
-#     res = []
+def pattern_code_to_str(code: int) -> str:
+    code = str(code)
+    if pattern_codes_file_path.exists():
+        with open(pattern_codes_file_path, "r") as file:
+            m = json.load(file)
+    else:
+        m = {}
+        i = 0
 
-#     for i in range():
+        strs = deque()
+        strs.append("")
+        for i in range(5):
+            for _ in range(len(strs)):
+                s = strs.popleft()
+                strs.append(s + "r")
+                strs.append(s + "y")
+                strs.append(s + "g")
+
+        for s in strs:
+            c = pattern_str_to_code(s)
+            m[c] = s
+        with open(pattern_codes_file_path, "w") as file:
+            json.dump(m, file)
+    return m[f"{code}"]
 
 
 if __name__ == "__main__":
-    print(pattern_str_to_code("rrrrr"))
-    # print(pattern_code_to_str(0))
-    print(pattern_str_to_code("gggrg"))
-    # print(pattern_code_to_str(188))
-    print(pattern_str_to_code("grggg"))
-    # print(pattern_code_to_str(236))
+    # print(pattern_str_to_code("rrrrr"))
+    print(pattern_code_to_str(0))
+    # print(pattern_str_to_code("gggrg"))
+    print(pattern_code_to_str(188))
+    # print(pattern_str_to_code("grggg"))
+    print(pattern_code_to_str(236))
