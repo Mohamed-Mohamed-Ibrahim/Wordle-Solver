@@ -22,15 +22,15 @@ def get_user_guess(guesses):
 
     user_guess = input().strip()
 
-    # while user_guess not in guesses or not re.match(valid_guess_regex, user_guess):
-    #     print(
-    #         "Please. Ensure that the input is following the right requirements\n"
-    #         + "1. length of 5\n"
-    #         + "2. the word is in the dictionary\n"
-    #         + "3. only lower case english characters is supported\n"
-    #     )
-    #     print("Guess Word: ", end="")
-    #     user_guess = input().strip()
+    while user_guess not in guesses or not re.match(valid_guess_regex, user_guess):
+        print(
+            "Please. Ensure that the input is following the right requirements\n"
+            + "1. length of 5\n"
+            + "2. the word is in the dictionary\n"
+            + "3. only lower case english characters is supported\n"
+        )
+        print("Guess Word: ", end="")
+        user_guess = input().strip()
 
     return user_guess
 
@@ -40,14 +40,14 @@ def get_user_feedback():
 
     user_feedback = input().strip()
 
-    # while not re.match(valid_feedback_regex, user_feedback):
-    #     print(
-    #         "Please. Ensure that the input is following the right requirements\n"
-    #         + "1. length of 5\n"
-    #         + "2. g or y or r are the only supported characters\n"
-    #     )
-    #     print("Feedback (g for green, y for yellow, r for grey): ", end="")
-    #     user_feedback = input().strip()
+    while not re.match(valid_feedback_regex, user_feedback):
+        print(
+            "Please. Ensure that the input is following the right requirements\n"
+            + "1. length of 5\n"
+            + "2. g or y or r are the only supported characters\n"
+        )
+        print("Feedback (g for green, y for yellow, r for grey): ", end="")
+        user_feedback = input().strip()
 
     return user_feedback
 
