@@ -204,7 +204,6 @@ def get_best_guess(pattern_matrix, user_guess="", user_feedback="", targets=[]):
         if guess in targets:
             best_guess = guess
             break
-    print(len(best_guesses))
 
     return best_guess, best_information_gain, targets
 
