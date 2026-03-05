@@ -1,7 +1,7 @@
 from pathlib import Path
 import math, json
 import pandas as pd
-from collections import Counter
+from collections import Counter, deque
 import numpy as np
 import re
 
@@ -209,11 +209,11 @@ def main():
     print("=" * 100, "\n")
 
     i = 0
-    h_w = math.log2(3242)
     pattern_matrix = precompute_pattern_matrix()
     guesses = pattern_matrix.columns.to_list()
     targets = pattern_matrix.index.to_list()
     user_guess, user_feedback = "", ""
+    h_w = math.log2(len(targets))
 
     while i < N_ITERS:
         best_guess, best_information_gain, targets = get_best_guess(
@@ -230,7 +230,7 @@ def main():
 
         gained_entropy = get_entropy(pattern_matrix, user_guess, user_feedback, targets)
         print(f"Entropy gained from guess: {gained_entropy}")
-        h_w -= gained_entropy
+        h_w = math.log2(len(targets))
 
         print()
 
