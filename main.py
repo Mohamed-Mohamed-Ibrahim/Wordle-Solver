@@ -138,20 +138,21 @@ def precompute_pattern_matrix():
 
     return df
 
-def get_best_guess(pattern_matrix, user_guess="", user_feedback=""):
+
+def get_best_guess(pattern_matrix, user_guess="", user_feedback="", targets=[]):
     best_guess = ""
     best_information_gain = 0
-    ref_targets = pattern_matrix.index.to_list()
-    
+    if targets == []:
+        targets = pattern_matrix.index.to_list()
+
     # 1. Correct Filtering Logic
     if user_guess != "" and user_feedback != "":
         # Use the logic from pattern_code to ensure perfect matching
         targets = [
-            target for target in ref_targets 
+            target
+            for target in targets
             if pattern_code(user_guess, target) == user_feedback
         ]
-    else:
-        targets = ref_targets
 
     # 2. Fix the print statement (print length, not the whole list)
     print(f"Remaining possible targets: {len(targets)}")
@@ -165,22 +166,23 @@ def get_best_guess(pattern_matrix, user_guess="", user_feedback=""):
         patterns = []
         for target in targets:
             patterns.append(pattern_matrix.at[target, guess])
-        
+
         # Calculate distribution of resulting patterns
         codes = [pattern_str_to_code(pattern) for pattern in patterns]
         cnts = Counter(codes)
-        
+
         information_gain = 0
         num_targets = len(targets)
         for cnt in cnts.values():
             prob = cnt / num_targets
             information_gain -= prob * math.log2(prob)
-            
+
         if information_gain > best_information_gain:
             best_guess = guess
             best_information_gain = information_gain
-            
+
     return best_guess, best_information_gain, targets
+
 
 def print_iter(h_w, h_y, best_word):
     print(f"prior entropy H(W)={h_w:.3f}")
