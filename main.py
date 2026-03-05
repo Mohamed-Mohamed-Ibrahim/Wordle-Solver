@@ -94,20 +94,20 @@ def get_user_feedback():
 
 
 def pattern_code(guess, target):
-    res = []
-
-    for g, t in zip(guess, target):
-        if g == t:
-            res.append("g")
-        else:
-            res.append("r")
-
+    res = ["r"] * 5
     ct = Counter(target)
 
-    for i, c in enumerate(guess):
-        if ct[c] != 0 and res[i] != "g":
+    # First pass: Find all Greens and "consume" them from the count
+    for i, (g, t) in enumerate(zip(guess, target)):
+        if g == t:
+            res[i] = "g"
+            ct[g] -= 1
+
+    # Second pass: Find Yellows among remaining letters
+    for i, g in enumerate(guess):
+        if res[i] != "g" and ct[g] > 0:
             res[i] = "y"
-            ct[c] = 0
+            ct[g] -= 1
 
     return "".join(res)
 
@@ -138,48 +138,49 @@ def precompute_pattern_matrix():
 
     return df
 
-
 def get_best_guess(pattern_matrix, user_guess="", user_feedback=""):
     best_guess = ""
     best_information_gain = 0
     ref_targets = pattern_matrix.index.to_list()
-    targets = set()
-    if user_guess != "":
-        for target in ref_targets:
-            valid_target = True
-            for i, (c, f) in enumerate(zip(user_guess, user_feedback)):
-                if c != target[i] and f == "g":
-                    valid_target = False
-                if c not in target and f == "y":
-                    valid_target = False
-                if c in target and f == "r":
-                    valid_target = False
-            if valid_target:
-                targets.add(target)
-
-        targets = list(targets)
+    
+    # 1. Correct Filtering Logic
+    if user_guess != "" and user_feedback != "":
+        # Use the logic from pattern_code to ensure perfect matching
+        targets = [
+            target for target in ref_targets 
+            if pattern_code(user_guess, target) == user_feedback
+        ]
     else:
         targets = ref_targets
-    print(f"Targets length: {len(targets)}")
-    # print(f"Targets length: {targets}")
+
+    # 2. Fix the print statement (print length, not the whole list)
+    print(f"Remaining possible targets: {len(targets)}")
+
+    # 3. Optimization: If only one target is left, return it immediately
+    if len(targets) == 1:
+        return targets[0], 0.0, targets
+
+    # 4. Entropy Calculation
     for guess in pattern_matrix.columns:
         patterns = []
         for target in targets:
             patterns.append(pattern_matrix.at[target, guess])
+        
+        # Calculate distribution of resulting patterns
         codes = [pattern_str_to_code(pattern) for pattern in patterns]
         cnts = Counter(codes)
-        distribution = []
-        for code, cnt in cnts.items():
-            distribution.append(cnt / len(codes))
+        
         information_gain = 0
-        for prob in distribution:
-            information_gain += prob * math.log2(prob)
-        information_gain *= -1
+        num_targets = len(targets)
+        for cnt in cnts.values():
+            prob = cnt / num_targets
+            information_gain -= prob * math.log2(prob)
+            
         if information_gain > best_information_gain:
             best_guess = guess
             best_information_gain = information_gain
+            
     return best_guess, best_information_gain, targets
-
 
 def print_iter(h_w, h_y, best_word):
     print(f"prior entropy H(W)={h_w:.3f}")
