@@ -218,9 +218,8 @@ def print_iter(h_w, h_y, best_word):
     print(f"expected posterior entropy H(W|Y)={h_w - h_y:.3f}")
     print(f"information gain I(W;Y)={h_y:.3f}")
 
-    # print(f"BEST={best_word}\n")
-    print(f"BEST={best_word}")
-    # print("=" * 100, "\n")
+    print(f"BEST={best_word}\n")
+    print("=" * 100, "\n")
 
 
 # endregion
@@ -228,7 +227,7 @@ def print_iter(h_w, h_y, best_word):
 
 # region main fn
 def main():
-    # print("=" * 100, "\n")
+    print("=" * 100, "\n")
 
     i = 0
     pattern_matrix = precompute_pattern_matrix()
@@ -243,28 +242,28 @@ def main():
         )
         print_iter(h_w, best_information_gain, best_guess)
 
-        # print("Guess Word: ", end="")
+        print("Guess Word: ", end="")
         user_guess = get_user_guess(set(guesses))
 
-        # print("Feedback (g for green, y for yellow, r for grey): ", end="")
+        print("Feedback (g for green, y for yellow, r for grey): ", end="")
         user_feedback = get_user_feedback()
 
         gained_entropy = h_w - math.log2(len(targets))
-        # print(f"Entropy gained from guess: {gained_entropy}")
+        print(f"Entropy gained from guess: {gained_entropy}")
         h_w = math.log2(len(targets))
 
         print()
 
         if user_feedback == "ggggg":
-            # print("Well Done")
+            print("Well Done")
             return
 
         if len(targets) == 0:
-            # print("No such a target in targets.json")
+            print("No such a target in targets.json")
             break
 
         i += 1
-    # print("Game Over ... Better Luck next time ...")
+    print("Game Over ... Better Luck next time ...")
 
 
 # endregion
