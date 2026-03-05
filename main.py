@@ -5,7 +5,7 @@ from collections import Counter
 import numpy as np
 import re
 
-from feedback import pattern_str_to_code
+from feedback import *
 
 N_ITERS = 6
 
@@ -119,7 +119,8 @@ def get_best_guess(pattern_matrix, user_guess="", user_feedback=""):
         targets = list(targets)
     else:
         targets = ref_targets
-    print(f"Targets length: {len(targets)}")
+    # print(f"Targets length: {len(targets)}")
+    print(f"Targets length: {targets}")
     for guess in pattern_matrix.columns:
         patterns = []
         for target in targets:
@@ -155,10 +156,8 @@ def get_entropy(pattern_matrix, guess, feedback, targets):
         patterns.append(pattern_matrix.at[target, guess])
     codes = [pattern_str_to_code(pattern) for pattern in patterns]
     cnts = Counter(codes)
-    print(cnts[feedback])
-    prob = cnts[feedback] / len(codes)
+    prob = cnts[pattern_str_to_code(feedback)] / len(codes)
     entropy = -1 * prob * math.log2(prob) if prob != 0 else 0
-    print(entropy)
     return entropy
 
 
