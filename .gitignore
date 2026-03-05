@@ -1,6 +1,7 @@
 # .gitignore for Solvy-study-agent (Python project)
 
 .vscode/
+data/pattern_matrix.csv
 
 # Byte-compiled / cached
 __pycache__/
