@@ -1,10 +1,14 @@
+# region imports
 from pathlib import Path
 import math, json
 import pandas as pd
 from collections import Counter, deque
 import numpy as np
 import re
+# endregion
 
+
+# region Global Variables
 N_ITERS = 6
 
 pattern_matrix = None
@@ -15,6 +19,7 @@ pattern_matrix_file = data_dir / "pattern_matrix.csv"
 guess_file_path = data_dir / "dictionary_5_letter.json"
 target_file_path = data_dir / "targets_5_letter.json"
 pattern_codes_file_path = data_dir / "codes.json"
+# endregion
 
 
 # region conversion
@@ -102,25 +107,7 @@ def get_user_feedback():
 # endregion
 
 
-def pattern_code(guess, target):
-    res = ["r"] * 5
-    ct = Counter(target)
-
-    # First pass: Find all Greens and "consume" them from the count
-    for i, (g, t) in enumerate(zip(guess, target)):
-        if g == t:
-            res[i] = "g"
-            ct[g] -= 1
-
-    # Second pass: Find Yellows among remaining letters
-    for i, g in enumerate(guess):
-        if res[i] != "g" and ct[g] > 0:
-            res[i] = "y"
-            ct[g] -= 1
-
-    return "".join(res)
-
-
+# region pattern matrix
 def precompute_pattern_matrix():
     if pattern_matrix_file.exists():
         return pd.read_csv(pattern_matrix_file, index_col=0)
@@ -146,6 +133,28 @@ def precompute_pattern_matrix():
     # print(df)
 
     return df
+
+
+# endregion
+
+# region VIP fns
+def pattern_code(guess, target):
+    res = ["r"] * 5
+    ct = Counter(target)
+
+    # First pass: Find all Greens and "consume" them from the count
+    for i, (g, t) in enumerate(zip(guess, target)):
+        if g == t:
+            res[i] = "g"
+            ct[g] -= 1
+
+    # Second pass: Find Yellows among remaining letters
+    for i, g in enumerate(guess):
+        if res[i] != "g" and ct[g] > 0:
+            res[i] = "y"
+            ct[g] -= 1
+
+    return "".join(res)
 
 
 def get_best_guess(pattern_matrix, user_guess="", user_feedback="", targets=[]):
@@ -191,8 +200,9 @@ def get_best_guess(pattern_matrix, user_guess="", user_feedback="", targets=[]):
             best_information_gain = information_gain
 
     return best_guess, best_information_gain, targets
+# endregion
 
-
+# region utils fns
 def print_iter(h_w, h_y, best_word):
     print(f"prior entropy H(W)={h_w:.3f}")
     print(f"best-guess expected feedback entropy H(Y)={h_y:.3f}")
@@ -203,17 +213,10 @@ def print_iter(h_w, h_y, best_word):
     print("=" * 100, "\n")
 
 
-def get_entropy(pattern_matrix, guess, feedback, targets):
-    patterns = []
-    for target in targets:
-        patterns.append(pattern_matrix.at[target, guess])
-    codes = [pattern_str_to_code(pattern) for pattern in patterns]
-    cnts = Counter(codes)
-    prob = cnts[pattern_str_to_code(feedback)] / len(codes)
-    entropy = -1 * prob * math.log2(prob) if prob != 0 else 0
-    return entropy
+# endregion
 
 
+# region main fn
 def main():
     print("=" * 100, "\n")
 
@@ -231,13 +234,12 @@ def main():
         print_iter(h_w, best_information_gain, best_guess)
 
         print("Guess Word: ", end="")
-        # user_guess = get_user_guess(set(guesses))
-        user_guess = best_guess
+        user_guess = get_user_guess(set(guesses))
 
         print("Feedback (g for green, y for yellow, r for grey): ", end="")
         user_feedback = get_user_feedback()
 
-        gained_entropy = get_entropy(pattern_matrix, user_guess, user_feedback, targets)
+        gained_entropy = h_w - math.log2(len(targets))
         print(f"Entropy gained from guess: {gained_entropy}")
         h_w = math.log2(len(targets))
 
@@ -255,8 +257,7 @@ def main():
     print("Game Over ... Better Luck next time ...")
 
 
+# endregion
+
 if __name__ == "__main__":
     main()
-
-    # print(get_best_guess(pattern_matrix))
-    # print(pattern_code("ALLEY", "APPLE"))
