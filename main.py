@@ -70,36 +70,36 @@ def pattern_code_to_str(code: int) -> str:
 
 # region input validation
 def get_user_guess(guesses):
-    # valid_guess_regex = r"^[a-z]{5}$"
+    valid_guess_regex = r"^[a-z]{5}$"
 
     user_guess = input().strip()
 
-    # while user_guess not in guesses or not re.match(valid_guess_regex, user_guess):
-    #     print(
-    #         "Please. Ensure that the input is following the right requirements\n"
-    #         + "1. length of 5\n"
-    #         + "2. the word is in the dictionary\n"
-    #         + "3. only lower case english characters is supported\n"
-    #     )
-    #     print("Guess Word: ", end="")
-    #     user_guess = input().strip()
+    while user_guess not in guesses or not re.match(valid_guess_regex, user_guess):
+        print(
+            "Please. Ensure that the input is following the right requirements\n"
+            + "1. length of 5\n"
+            + "2. the word is in the dictionary\n"
+            + "3. only lower case english characters is supported\n"
+        )
+        print("Guess Word: ", end="")
+        user_guess = input().strip()
 
     return user_guess
 
 
 def get_user_feedback():
-    # valid_feedback_regex = r"^(r|g|y){5}$"
+    valid_feedback_regex = r"^(r|g|y){5}$"
 
     user_feedback = input().strip()
 
-    # while not re.match(valid_feedback_regex, user_feedback):
-    #     print(
-    #         "Please. Ensure that the input is following the right requirements\n"
-    #         + "1. length of 5\n"
-    #         + "2. g or y or r are the only supported characters\n"
-    #     )
-    #     print("Feedback (g for green, y for yellow, r for grey): ", end="")
-    #     user_feedback = input().strip()
+    while not re.match(valid_feedback_regex, user_feedback):
+        print(
+            "Please. Ensure that the input is following the right requirements\n"
+            + "1. length of 5\n"
+            + "2. g or y or r are the only supported characters\n"
+        )
+        print("Feedback (g for green, y for yellow, r for grey): ", end="")
+        user_feedback = input().strip()
 
     return user_feedback
 
@@ -240,6 +240,11 @@ def main():
         best_guess, best_information_gain, targets = get_best_guess(
             pattern_matrix, user_guess, user_feedback, targets
         )
+
+        if i != 0:
+            gained_entropy = h_w - math.log2(len(targets))
+            print(f"Entropy gained from guess: {gained_entropy}")
+
         print_iter(h_w, best_information_gain, best_guess)
 
         print("Guess Word: ", end="")
@@ -248,8 +253,6 @@ def main():
         print("Feedback (g for green, y for yellow, r for grey): ", end="")
         user_feedback = get_user_feedback()
 
-        gained_entropy = h_w - math.log2(len(targets))
-        print(f"Entropy gained from guess: {gained_entropy}")
         h_w = math.log2(len(targets))
 
         print()
